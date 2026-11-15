@@ -298,7 +298,9 @@ function demo(){
   add(13,'e',55,'อาหาร','ข้าวกะเพรา');
   return out;
 }
-function isDemo(){return !S.txs.length;}
+/* ข้อมูลตัวอย่างแสดงเมื่อยังไม่มีรายการจริง และผู้ใช้ยังไม่กด "ล้างข้อมูลตัวอย่าง" (เก็บเป็น rr_nodemo) */
+function demoHidden(){try{return localStorage.getItem('rr_nodemo')==='1';}catch(e){return false;}}
+function isDemo(){return !S.txs.length&&!demoHidden();}
 function list(){return isDemo()?demo():S.txs;}
 
 /* ---------- storage ---------- */
@@ -490,7 +492,7 @@ function render(){
   var h='<header><div class="month"><button class="icon-btn" data-act="prev" aria-label="'+(yr?'ปีก่อน':'เดือนก่อน')+'">‹</button><h1>'+esc(yr?yearLabel():monthLabel(S.month))+'</h1><button class="icon-btn" data-act="next" aria-label="'+(yr?'ปีถัดไป':'เดือนถัดไป')+'">›</button></div><button class="icon-btn" data-act="settings" aria-label="ตั้งค่า">⋯</button></header>';
   h+=summary(s,yr);
   if(S.tab==='home'&&!isDemo())h+=accStrip();
-  if(isDemo())h+='<div class="banner">นี่คือข้อมูลตัวอย่างสำหรับดูหน้าตา ยังไม่ถูกบันทึก เมื่อเพิ่มรายการแรกของคุณ ตัวอย่างจะหายไปเอง</div>';
+  if(isDemo())h+='<div class="banner">นี่คือข้อมูลตัวอย่างสำหรับดูหน้าตา ยังไม่ถูกบันทึก เมื่อเพิ่มรายการแรกของคุณ ตัวอย่างจะหายไปเอง<br><button type="button" class="link" data-act="hide-demo">ล้างข้อมูลตัวอย่าง เริ่มจากหน้าว่าง</button></div>';
   if(S.tab==='home')h+=filterBar()+'<div id="lv">'+listBody()+'</div>';
   else h+='<div class="seg neutral" role="group" aria-label="ช่วงเวลา"><button type="button" data-act="sm-m" aria-pressed="'+(S.sm==='m')+'">รายเดือน</button><button type="button" data-act="sm-y" aria-pressed="'+(S.sm==='y')+'">รายปี</button></div>'+(yr?yearView(tx,s):statsView(tx,s));
   app.innerHTML=h;
@@ -1075,6 +1077,7 @@ document.getElementById('app').addEventListener('click',function(e){
   else if(a==='transfer')transferSheet();
   else if(a==='edit-budget')inlineEdit(b,S.budget||'',true,saveBudget);
   else if(a==='sel'){S.sel=S.sel?null:{};render();}
+  else if(a==='hide-demo'){try{localStorage.setItem('rr_nodemo','1');}catch(x){}S.sel=null;render();toast('ล้างข้อมูลตัวอย่างแล้ว');}
   else if(a==='sel-all'){var vis=filtered(),all=vis.length&&vis.every(function(x){return S.sel[x.id];});S.sel={};if(!all)vis.forEach(function(x){S.sel[x.id]=1;});renderList();}
   else if(a==='sel-cat'||a==='sel-acc'||a==='sel-date'||a==='sel-del')bulkSheet(a.slice(4));
   else if(b.dataset.amt){t=S.txs.find(function(x){return x.id===b.dataset.amt;});if(t)inlineEdit(b,t.amt,false,function(n){t.amt=n;saveTx(t);});}
