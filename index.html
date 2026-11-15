@@ -280,28 +280,7 @@ function dayLabel(s){
 }
 function uid(){return 't'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
-/* ---------- example data (memory only, never saved) ---------- */
-function demo(){
-  var now=new Date(),m=ym(now),out=[],i=0;
-  function add(day,type,amt,cat,note){var d=new Date(now.getFullYear(),now.getMonth(),day);if(d>now)return;out.push({id:'demo'+(i++),type:type,amt:amt,cat:cat,note:note,date:ymd(d),demo:true});}
-  add(1,'i',8000,'เงินจากบ้าน','ค่าใช้จ่ายรายเดือน');
-  add(1,'e',3500,'ค่าเช่า/บิล','ค่าหอ');
-  add(2,'e',65,'อาหาร','ข้าวมันไก่');
-  add(3,'e',120,'เดินทาง','ค่าน้ำมัน');
-  add(4,'e',480,'เรียน','หนังสือสถิติ');
-  add(5,'i',1200,'งานพิเศษ/ขาย','ขายของออนไลน์');
-  add(6,'e',289,'สุขภาพ/ฟิตเนส','เวย์โปรตีน');
-  add(8,'e',75,'อาหาร','ก๋วยเตี๋ยว');
-  add(9,'e',350,'สันทนาการ','บอร์ดเกมคาเฟ่');
-  add(10,'e',90,'อาหาร','กาแฟ + ขนม');
-  add(12,'e',690,'ช้อปปิ้ง','เสื้อ');
-  add(13,'e',55,'อาหาร','ข้าวกะเพรา');
-  return out;
-}
-/* ข้อมูลตัวอย่างแสดงเมื่อยังไม่มีรายการจริง และผู้ใช้ยังไม่กด "ล้างข้อมูลตัวอย่าง" (เก็บเป็น rr_nodemo) */
-function demoHidden(){try{return localStorage.getItem('rr_nodemo')==='1';}catch(e){return false;}}
-function isDemo(){return !S.txs.length&&!demoHidden();}
-function list(){return isDemo()?demo():S.txs;}
+function list(){return S.txs;}
 
 /* ---------- storage ---------- */
 var HEX=/^#[0-9a-fA-F]{6}$/;
@@ -491,8 +470,7 @@ function render(){
   document.getElementById('tab-stats').setAttribute('aria-current',S.tab==='stats'?'page':'false');
   var h='<header><div class="month"><button class="icon-btn" data-act="prev" aria-label="'+(yr?'ปีก่อน':'เดือนก่อน')+'">‹</button><h1>'+esc(yr?yearLabel():monthLabel(S.month))+'</h1><button class="icon-btn" data-act="next" aria-label="'+(yr?'ปีถัดไป':'เดือนถัดไป')+'">›</button></div><button class="icon-btn" data-act="settings" aria-label="ตั้งค่า">⋯</button></header>';
   h+=summary(s,yr);
-  if(S.tab==='home'&&!isDemo())h+=accStrip();
-  if(isDemo())h+='<div class="banner">นี่คือข้อมูลตัวอย่างสำหรับดูหน้าตา ยังไม่ถูกบันทึก เมื่อเพิ่มรายการแรกของคุณ ตัวอย่างจะหายไปเอง<br><button type="button" class="link" data-act="hide-demo">ล้างข้อมูลตัวอย่าง เริ่มจากหน้าว่าง</button></div>';
+  if(S.tab==='home')h+=accStrip();
   if(S.tab==='home')h+=filterBar()+'<div id="lv">'+listBody()+'</div>';
   else h+='<div class="seg neutral" role="group" aria-label="ช่วงเวลา"><button type="button" data-act="sm-m" aria-pressed="'+(S.sm==='m')+'">รายเดือน</button><button type="button" data-act="sm-y" aria-pressed="'+(S.sm==='y')+'">รายปี</button></div>'+(yr?yearView(tx,s):statsView(tx,s));
   app.innerHTML=h;
@@ -505,7 +483,7 @@ function filterBar(){
   var cs=names.map(function(c){return opt(c,c,S.fCat);}).join('');
   if(S.fAcc&&!accById(S.fAcc))S.fAcc='';
   var as=S.accts.map(function(a){return opt(a.id,a.name,S.fAcc);}).join('');
-  return '<div class="filters"><input id="f-q" type="search" placeholder="ค้นหาโน้ตหรือหมวด" aria-label="ค้นหา" value="'+esc(S.q)+'"><div class="frow"><select id="f-type" aria-label="ประเภท">'+opt('','ทุกประเภท',S.fType)+opt('e','รายจ่าย',S.fType)+opt('i','รายรับ',S.fType)+opt('x','โอนเงิน',S.fType)+'</select><select id="f-cat" aria-label="หมวดหมู่">'+opt('','ทุกหมวด',S.fCat)+cs+'</select></div><div class="frow"><select id="f-acc" aria-label="บัญชี">'+opt('','ทุกบัญชี',S.fAcc)+as+'</select></div><div class="fopt">'+(S.fYear?'<button type="button" class="link" data-act="clear-year">ปี '+(+S.fYear+543)+' ทั้งปี · กลับเป็นรายเดือน</button>':'')+'<label class="chk"><input type="checkbox" id="f-all"'+(S.fAll?' checked':'')+'> ค้นหาทุกเดือน</label>'+(isDemo()?'':'<button type="button" class="selbtn'+(S.sel?' on':'')+'" data-act="sel" aria-pressed="'+!!S.sel+'">'+(S.sel?ICO.check+'เสร็จ':ICO.list+'เลือกหลายรายการ')+'</button>')+'</div></div>';
+  return '<div class="filters"><input id="f-q" type="search" placeholder="ค้นหาโน้ตหรือหมวด" aria-label="ค้นหา" value="'+esc(S.q)+'"><div class="frow"><select id="f-type" aria-label="ประเภท">'+opt('','ทุกประเภท',S.fType)+opt('e','รายจ่าย',S.fType)+opt('i','รายรับ',S.fType)+opt('x','โอนเงิน',S.fType)+'</select><select id="f-cat" aria-label="หมวดหมู่">'+opt('','ทุกหมวด',S.fCat)+cs+'</select></div><div class="frow"><select id="f-acc" aria-label="บัญชี">'+opt('','ทุกบัญชี',S.fAcc)+as+'</select></div><div class="fopt">'+(S.fYear?'<button type="button" class="link" data-act="clear-year">ปี '+(+S.fYear+543)+' ทั้งปี · กลับเป็นรายเดือน</button>':'')+'<label class="chk"><input type="checkbox" id="f-all"'+(S.fAll?' checked':'')+'> ค้นหาทุกเดือน</label>'+('<button type="button" class="selbtn'+(S.sel?' on':'')+'" data-act="sel" aria-pressed="'+!!S.sel+'">'+(S.sel?ICO.check+'เสร็จ':ICO.list+'เลือกหลายรายการ')+'</button>')+'</div></div>';
 }
 function listBody(){
   var tx=filtered(),h='';
@@ -534,14 +512,14 @@ function accStrip(){
 }
 function listView(tx){
   if(!tx.length)return filtering()?'<div class="empty">ไม่พบรายการที่ตรงกับตัวกรอง</div>':'<div class="empty">ยังไม่มีรายการในเดือนนี้<br>กด + เพื่อเพิ่มรายการแรก</div>';
-  var sel=S.sel,demoMode=isDemo();
+  var sel=S.sel;
   var by={};tx.forEach(function(t){(by[t.date]=by[t.date]||[]).push(t);});
   var days=Object.keys(by).sort().reverse(),h='';
   days.forEach(function(d){
     var ds=sums(by[d]),net=ds.i-ds.e;
     h+='<div class="day"><div class="day-head"><span>'+esc(dayLabel(d))+'</span><span class="num">'+(net<0?'−':'+')+money(Math.abs(net))+'</span></div><div class="list">';
     by[d].forEach(function(t){
-      var on=sel&&sel[t.id],amtTag=(sel||demoMode)?'span':'button';
+      var on=sel&&sel[t.id],amtTag=sel?'span':'button';
       h+='<div class="tx'+(on?' on':'')+'"><button type="button" class="txmain" data-id="'+esc(t.id)+'"'+(sel?' aria-pressed="'+!!on+'"':'')+'>'+(sel?'<span class="cb'+(on?' on':'')+'" aria-hidden="true">'+(on?ICO.check:'')+'</span>':'')+'<span class="dot" style="background:'+colorOf(t.cat,t.type)+'">'+(t.type==='x'?'⇄':esc(t.cat.charAt(0)))+'</span><span class="mid"><div class="t1">'+esc(t.note||(t.type==='x'?'โอนเงิน':t.cat))+'</div><div class="t2">'+esc(subline(t))+'</div></span></button><'+amtTag+(amtTag==='button'?' type="button" data-amt="'+esc(t.id)+'" aria-label="แก้จำนวนเงิน" class="amt-btn amt num '+t.type+'"':' class="amt num '+t.type+'"')+'>'+(t.type==='i'?'+':(t.type==='x'?'':'−'))+money(t.amt)+'</'+amtTag+'></div>';
     });
     h+='</div></div>';
@@ -1077,11 +1055,10 @@ document.getElementById('app').addEventListener('click',function(e){
   else if(a==='transfer')transferSheet();
   else if(a==='edit-budget')inlineEdit(b,S.budget||'',true,saveBudget);
   else if(a==='sel'){S.sel=S.sel?null:{};render();}
-  else if(a==='hide-demo'){try{localStorage.setItem('rr_nodemo','1');}catch(x){}S.sel=null;render();toast('ล้างข้อมูลตัวอย่างแล้ว');}
   else if(a==='sel-all'){var vis=filtered(),all=vis.length&&vis.every(function(x){return S.sel[x.id];});S.sel={};if(!all)vis.forEach(function(x){S.sel[x.id]=1;});renderList();}
   else if(a==='sel-cat'||a==='sel-acc'||a==='sel-date'||a==='sel-del')bulkSheet(a.slice(4));
   else if(b.dataset.amt){t=S.txs.find(function(x){return x.id===b.dataset.amt;});if(t)inlineEdit(b,t.amt,false,function(n){t.amt=n;saveTx(t);});}
-  else if(b.dataset.id&&!isDemo()){
+  else if(b.dataset.id){
     if(S.sel){if(S.sel[b.dataset.id])delete S.sel[b.dataset.id];else S.sel[b.dataset.id]=1;renderList();}
     else{t=S.txs.find(function(x){return x.id===b.dataset.id;});if(t){if(t.type==='x')transferSheet(t);else entrySheet(t);}}
   }
