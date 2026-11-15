@@ -310,8 +310,24 @@ function cleanAccts(a){
   a.forEach(function(x){if(x&&typeof x.id==='string'&&x.id&&typeof x.name==='string'&&x.name.trim()&&!seen[x.id]){seen[x.id]=1;out.push({id:x.id,name:x.name.trim().slice(0,20),color:HEX.test(x.color)?x.color:'#7A8A96'});}});
   return out.length?out:null;
 }
+/* ความปลอดภัยของข้อมูลเมื่ออัปเดตแอป: ก่อนใช้ข้อมูลเวอร์ชันเก่าครั้งแรก เก็บสำเนาดิบของทุกคีย์ rr_* ไว้ใน rr_bak_v<เวอร์ชัน> (ทำครั้งเดียว ไม่เขียนทับ)
+   และถ้าข้อมูลหลักอ่านไม่ได้ จะเก็บสำเนาไว้ก่อนเสมอ เพื่อไม่ให้การบันทึกครั้งถัดไปทับข้อมูลเดิมจนหาย */
+var DATA_VER='3';
+function snapshotOld(){
+  try{
+    if(localStorage.getItem('rr_ver')===DATA_VER||localStorage.getItem('rr_tx')===null)return;
+    var k='rr_bak_v'+DATA_VER;if(localStorage.getItem(k)!==null)return;
+    var snap={};Object.keys(localStorage).forEach(function(n){if(n.indexOf('rr_')===0&&n.indexOf('rr_bak')!==0)snap[n]=localStorage.getItem(n);});
+    localStorage.setItem(k,JSON.stringify(snap));
+  }catch(e){}
+}
 function localLoad(){
-  try{S.txs=JSON.parse(localStorage.getItem('rr_tx')||'[]');S.budget=+localStorage.getItem('rr_budget')||0;}catch(e){}
+  snapshotOld();
+  try{S.txs=JSON.parse(localStorage.getItem('rr_tx')||'[]');S.budget=+localStorage.getItem('rr_budget')||0;if(!Array.isArray(S.txs))throw 0;}
+  catch(e){
+    S.txs=[];
+    try{if(localStorage.getItem('rr_bak_corrupt')===null)localStorage.setItem('rr_bak_corrupt',localStorage.getItem('rr_tx')||'');}catch(x){}
+  }
   try{
     var c=JSON.parse(localStorage.getItem('rr_cats')||'null');
     if(c){S.cats={e:cleanCats(c.e)||copyCats(EXP),i:cleanCats(c.i)||copyCats(INC)};}
@@ -324,7 +340,7 @@ function localLoad(){
 function localSave(){
   try{
     localStorage.setItem('rr_tx',JSON.stringify(S.txs));localStorage.setItem('rr_budget',String(S.budget));
-    localStorage.setItem('rr_cats',JSON.stringify(S.cats));localStorage.setItem('rr_cb',JSON.stringify(S.cb));localStorage.setItem('rr_rec',JSON.stringify(S.rec));localStorage.setItem('rr_accts',JSON.stringify(S.accts));localStorage.setItem('rr_lastacc',S.lastAcc);
+    localStorage.setItem('rr_cats',JSON.stringify(S.cats));localStorage.setItem('rr_cb',JSON.stringify(S.cb));localStorage.setItem('rr_rec',JSON.stringify(S.rec));localStorage.setItem('rr_accts',JSON.stringify(S.accts));localStorage.setItem('rr_lastacc',S.lastAcc);localStorage.setItem('rr_ver',DATA_VER);
   }catch(e){toast('บันทึกไม่สำเร็จ พื้นที่อาจเต็ม');}
 }
 /* สร้างรายการจากรายการประจำ: เดือนที่ยังไม่สร้างจนถึงเดือนนี้ (เฉพาะวันที่ที่ถึงแล้ว) คืนจำนวนที่สร้าง */
