@@ -1,5 +1,5 @@
 // เปลี่ยนเลขเวอร์ชันทุกครั้งที่อัพเดทแอพ เพื่อให้เครื่องดึงไฟล์ใหม่
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = 'rr-' + VERSION;
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-180.png'];
 
