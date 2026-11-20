@@ -1,1 +1,1 @@
-แอพสำหรับรายรับรายจ่าย
+An easy-to-use income and expense tracking app.
