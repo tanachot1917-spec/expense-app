@@ -266,6 +266,12 @@ svg text.today{fill:var(--ink);font-weight:600}
   .ci .a-pig{transform-origin:50% 100%;animation:bounce .9s ease-in-out .35s var(--n)}
   .ci .a-arr1{animation:slidea .8s ease-in-out var(--n)}
   .ci .a-arr2{animation:slideb .8s ease-in-out var(--n)}
+  @keyframes bargrow{0%,100%{transform:scaleY(1)}40%{transform:scaleY(.55)}}
+  .ci .a-env{transform-origin:50% 100%;animation:bounce .8s ease-in-out var(--n)}
+  .ci .a-hrt{transform-origin:center;animation:beat .9s ease-in-out var(--n)}
+  .ci .a-sack{transform-origin:50% 100%;animation:wiggle .7s ease-in-out var(--n)}
+  .ci .a-bar1,.ci .a-bar2,.ci .a-bar3{transform-origin:50% 100%;animation:bargrow .9s ease-in-out var(--n)}
+  .ci .a-bar2{animation-delay:.12s}.ci .a-bar3{animation-delay:.24s}
   @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
   @keyframes sheetup{from{transform:translateY(100%)}to{transform:none}}
@@ -560,6 +566,10 @@ var PIG_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><g class="a-coin"><circ
 /* โอนระหว่างบัญชี: ลูกศรสวนทางกัน */
 var XFER_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><g class="a-arr1" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.2h14"/><path d="M14 4.4l4.2 3.8-4.2 3.8"/></g><g class="a-arr2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 15.8h-14"/><path d="M10 12l-4.2 3.8 4.2 3.8"/></g><circle class="a-sp1" cx="20.6" cy="5" r="1.1" fill="#fff"/><circle class="a-sp2" cx="3.4" cy="19.2" r="1" fill="#fff"/></svg>';
 CAT_SVG['ปรับยอด']=CAT_SVG['เงินตั้งต้น']=PIG_SVG;CAT_SVG.__x=XFER_SVG;
+/* หมวดรายรับ: ซองเงินหัวใจ (เงินจากบ้าน) / ถุงเงิน ฿ (งานพิเศษ/ขาย) / แท่งกราฟขึ้นหน้ายิ้ม (ลงทุน) */
+CAT_SVG['เงินจากบ้าน']='<svg viewBox="0 0 24 24" aria-hidden="true"><g class="a-env"><rect x="3.2" y="6.2" width="17.6" height="12.6" rx="3.2" fill="#fff"/><path d="M4.6 8.6L12 14l7.4-5.4" fill="none" stroke="var(--cc)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path class="a-hrt" d="M12 17.6l-2.4-2.2a1.5 1.5 0 0 1 2.4-1.8 1.5 1.5 0 0 1 2.4 1.8z" fill="var(--cc)"/></g><circle class="a-sp1" cx="19.6" cy="4.4" r="1.2" fill="#fff"/><circle class="a-sp2" cx="4.4" cy="4.8" r="1" fill="#fff"/></svg>';
+CAT_SVG['งานพิเศษ/ขาย']='<svg viewBox="0 0 24 24" aria-hidden="true"><g class="a-sack"><rect x="8.8" y="3.6" width="6.4" height="2.6" rx="1.3" fill="#fff"/><path d="M12 6.8c-3.3 0-7.4 3.4-7.4 8.4a4.8 4.8 0 0 0 4.8 4.8h5.2a4.8 4.8 0 0 0 4.8-4.8c0-5-4.1-8.4-7.4-8.4z" fill="#fff"/><text x="12" y="16.9" text-anchor="middle" font-size="8.6" font-weight="700" fill="var(--cc)" font-family="IBM Plex Sans Thai,system-ui,sans-serif">฿</text></g></svg>';
+CAT_SVG['ลงทุน']='<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="a-bar1" x="3.6" y="13.6" width="4.4" height="6.6" rx="1.4" fill="#fff"/><rect class="a-bar2" x="9.8" y="9.6" width="4.4" height="10.6" rx="1.4" fill="#fff"/><g class="a-bar3"><rect x="16" y="4.6" width="4.6" height="15.6" rx="1.5" fill="#fff"/><circle cx="17.3" cy="9" r=".75" fill="var(--cc)"/><circle cx="19.3" cy="9" r=".75" fill="var(--cc)"/><path d="M17.5 10.8q.8.8 1.6 0" fill="none" stroke="var(--cc)" stroke-width=".9" stroke-linecap="round"/></g><circle class="a-sp1" cx="5.4" cy="6.2" r="1.2" fill="#fff"/></svg>';
 ICO.swap='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4"/></svg>';
 var XCOL='#5B7CFA',SPECIAL_COL={'ปรับยอด':'#E0A526','เงินตั้งต้น':'#E0A526'};
 /* ไอคอนในวงสี (.dot): หมวดที่ตั้งเองใช้ตัวอักษรตัวแรกเหมือนเดิม */
